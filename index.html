@@ -1,0 +1,82 @@
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>couchDB Read</title>
+</head>
+
+<style>
+.dataTable th{
+	padding:5px;
+	border-bottom:1px solid white;
+	background:#b9c9fe
+}
+.dataTable td{
+	border-bottom:1px solid white;
+	background:#d0dafd;
+}
+.buttonWrapper{
+	display:inline-block;
+	width:100%;
+	margin:0 auto;
+}
+</style>
+<body>
+
+<script src="http://code.jquery.com/jquery-2.1.0.min.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+var uuid_new, url2 = "https://codaptesting.couchappy.com"
+
+function get_all_docs(){
+	var tableData = "<table class='dataTable'><tr><th>Event Name</th><th>Pretty Time</th><th>Time</th></tr>";
+	
+	$.ajax({
+		type : "GET",
+		url : url2 + '/codap_test/_all_docs?limit=100&include_docs=true',
+		headers:{
+			'Content-Type':'application/json'
+		},
+		dataType : 'jsonp',
+		success : function(data){
+			for(index = 0; index < data.rows.length; index++){
+				tableData = tableData + "<tr><td>" + data.rows[index].doc.event + "</td><td>" + data.rows[index].doc.prettyTime + "</td><td>" + data.rows[index].doc.time + "</td></tr>";
+				//console.log(data.rows[index].doc);
+			}
+			tableData = tableData + "</table>";
+			$('.result').html(tableData);
+		}
+	});
+}
+function get_predefined_view(){
+	var tableData = "<table class='dataTable'><tr><th>Total Time</th></tr>";
+	
+	$.ajax({
+		type : "GET",
+		url : url2 + '/codap_test/_design/timeManipulate/_view/getTime?limit=100&reduce=true',
+		headers:{
+			'Content-Type':'application/json'
+		},
+		dataType : 'jsonp',
+		success : function(data){
+			tableData = tableData + "<tr><td>" + data.rows[0].value + "</td></tr></table>";
+			$('.result').html(tableData);
+		}
+	});
+}
+</script>
+
+
+<div class="buttonWrapper">
+<button onclick="get_all_docs()">Click To Read Logs</button>
+<button onclick="get_predefined_view()">Click To Read A View</button>
+</div>
+
+<div class="result">
+</div>
+
+<div class="">
+</div>
+
+</body>
+</html>
